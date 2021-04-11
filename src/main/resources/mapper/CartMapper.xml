@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.cn.common.dao.CartDao">
+
+    <resultMap id="cartMapper" type="com.shop.cn.common.pojo.Cart">
+        <id property="productId" column="product_id"></id>
+        <result property="productName" column="product_name"></result>
+        <result property="modifiedDate" column="gmt_modified"></result>
+        <result property="createDate" column="gmt_create"></result>
+        <result property="quantity" column="quantity"></result>
+        <result property="userId" column="user_id"></result>
+        <result property="isDelete" column="is_deleted"></result>
+        <result property="size" column="size"></result>
+
+    </resultMap>
+
+      <resultMap id="addressMapper" type="com.shop.cn.common.pojo.Address">
+        <id property="addressId" column="address_id"></id>
+        <result property="addressName" column="address_name"></result>
+        <result property="address" column="address"></result>
+        <result property="phone" column="phone"></result>
+        <result property="code" column="code"></result>
+        <result property="userId" column="user_id"></result>
+        <result property="sex" column="sex"></result>
+        <result property="company" column="company"></result>
+        <result property="email" column="email"></result>
+    </resultMap>
+
+
+    <insert id="addProductToCart" parameterType="com.shop.cn.common.pojo.Cart">
+        INSERT INTO cart (product_id,product_name,gmt_create,quantity,user_id,size) VALUES (#{productId},#{productName},now(),#{quantity},#{userId},#{size})
+    </insert>
+
+    <select id="findProductFromCart" parameterType="java.lang.Long" resultMap="cartMapper">
+        SELECT * FROM cart t WHERE t.user_id=#{_parameter}
+    </select>
+
+    <select id="findProductFromCartCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM cart t WHERE t.user_id=#{_parameter}
+    </select>
+
+    <delete id="deleteProductFromCart" parameterType="java.lang.Long">
+        delete  from cart WHERE user_id=#{_parameter}
+    </delete>
+
+    <delete id="deleteProductFromCartWithProductId" parameterType="com.shop.cn.common.pojo.Cart">
+        delete  from cart WHERE user_id=#{userId} and product_id=#{productId} and gmt_create=DATE_FORMAT(#{createDateStr},'%Y-%m-%d %T')
+    </delete>
+
+    <insert id="addAddressToTable" parameterType="com.shop.cn.common.pojo.Address">
+
+        INSERT INTO address (address_name,address,phone,code,sex,company,email,user_id)
+        VALUES (#{addressName},#{address},#{phone},#{code},#{sex},#{company},#{email},#{userId});
+    </insert>
+
+    <select id="findAllAddress" parameterType="java.lang.Long" resultMap="addressMapper">
+        SELECT * FROM address WHERE user_id=#{_parameter}
+    </select>
+    
+    <delete id="deleteAddressWithId" parameterType="java.lang.Long">
+
+        DELETE FROM address WHERE user_id=#{arg0} and address_id=#{arg1}
+    </delete>
+
+    <delete id="deleteAllAddress" parameterType="java.lang.Long">
+        DELETE FROM address WHERE user_id=#{_parameter}
+    </delete>
+
+    <select id="findAddressWithId" parameterType="java.lang.Long" resultMap="addressMapper">
+        SELECT * FROM address WHERE address_id=#{_parameter}
+    </select>
+</mapper>

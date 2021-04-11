@@ -1,0 +1,110 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.cn.common.dao.ProductDao">
+
+    <resultMap id="Category1Map" type="com.shop.cn.common.pojo.Category1">
+        <id property="category1Id" column="category1_id"></id>
+        <result property="category1Name" column="category1_name"></result>
+        <result property="category1Record" column="category1_record"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+        <result property="gmtModified" column="gmt_modified"></result>
+        <result property="showFlag" column="is_show"></result>
+        <result property="delFlag" column="is_delete"></result>
+    </resultMap>
+
+    <resultMap id="Category2Map" type="com.shop.cn.common.pojo.Category2">
+        <id property="category2Id" column="category2_id"></id>
+        <result property="category2Name" column="category2_name"></result>
+        <result property="category2Record" column="category2_record"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+        <result property="gmtModified" column="gmt_modified"></result>
+        <result property="showFlag" column="is_show"></result>
+        <result property="delFlag" column="is_delete"></result>
+    </resultMap>
+    
+    <resultMap id="ProductMap" type="com.shop.cn.common.pojo.Product">
+        <id property="productId" column="product_id"></id>
+        <result property="productName" column="product_name"></result>
+        <result property="category1Id" column="category1_id"></result>
+        <result property="category2Id" column="category2_id"></result>
+        <result property="purchasePrice" column="purchase_price"></result>
+        <result property="salePrice" column="sale_price"></result>
+        <result property="inventory" column="inventory"></result>
+        <result property="hits" column="hits"></result>
+        <result property="imgSrc" column="img_src"></result>
+        <result property="imgSrc2" column="img_src2"></result>
+        <result property="imgSrc3" column="img_src3"></result>
+        <result property="imgSrc4" column="img_src4"></result>
+        <result property="description" column="description"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+        <result property="gmtModified" column="gmt_modified"></result>
+        <result property="showFlag" column="is_show"></result>
+        <result property="delFlag" column="is_deleted"></result>
+    </resultMap>
+
+
+    <resultMap id="CollectionMap" type="com.shop.cn.common.pojo.Collection">
+        <id property="collectionId" column="collection_id"></id>
+        <result property="productId" column="product_id"></result>
+        <result property="userId" column="user_id"></result>
+    </resultMap>
+
+    <insert id="saveToLetter" parameterType="com.shop.cn.common.pojo.Letter">
+        INSERT INTO letter(contact,contactName,userId,contactCompany) VALUES (#{contact},#{contactName},#{userId},#{contactCompany})
+    </insert>
+
+    <select id="findCategory1" resultMap="Category1Map">
+      SELECT * FROM shopping_category1;
+    </select>
+
+    <select id="findCategory2" resultType="com.shop.cn.common.pojo.Category2" parameterType="java.lang.Long">
+      SELECT * FROM shopping_category2 WHERE category1_id=#{category1Id}
+    </select>
+
+    <select id="findProduct" resultMap="ProductMap" parameterType="com.shop.cn.common.pojo.Product">
+      select * from shopping_product t
+      WHERE
+      t.category1_id=#{category1Id}
+      and
+      t.category2_id=#{category2Id}
+      order by t.hits DESC
+    </select>
+
+    <select id="findProductDetail" resultType="com.shop.cn.common.pojo.Product" parameterType="java.lang.Long">
+      SELECT * FROM shopping_product t
+      WHERE t.product_id=#{id}
+    </select>
+
+    <select id="findProductDetailWithKey" resultType="com.shop.cn.common.pojo.Product" parameterType="java.lang.Long">
+      SELECT * FROM shopping_product t
+      WHERE t.product_id=#{id}
+    </select>
+
+    <update id="updateClickProduct" parameterType="java.lang.Long">
+        UPDATE shopping_product  SET hits=#{param2} WHERE product_id=#{param1}
+    </update>
+    
+    <select id="findAllProductOrderByHits" resultMap="ProductMap">
+        SELECT * FROM shopping_product ORDER BY hits DESC limit 0,8
+    </select>
+
+    <insert id="saveToCollection" parameterType="java.lang.Long">
+        INSERT INTO collection (product_id,user_id) VALUES (#{param1},#{param2})
+    </insert>
+
+    <select id="findAllFromCollection" parameterType="java.lang.Long" resultMap="CollectionMap">
+        SELECT * FROM collection WHERE user_id=#{_parameter}
+    </select>
+
+    <select id="findCollectionWithProductIdAndUserId" parameterType="java.lang.Long" resultMap="CollectionMap">
+        SELECT * FROM collection WHERE product_id=#{param1} and user_id=#{param2}
+    </select>
+
+    <delete id="deleteFromCollectionWithId" parameterType="java.lang.Long">
+        DELETE FROM collection WHERE product_id=#{param1} and user_id=#{param2}
+    </delete>
+
+    <delete id="deleteAllFromCollection" parameterType="java.lang.Long">
+        DELETE FROM collection WHERE user_id =#{_parameter}
+    </delete>
+
+</mapper>

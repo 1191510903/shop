@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.cn.common.dao.CheckoutDao">
+
+    <resultMap id="orderMapper" type="com.shop.cn.common.pojo.Order">
+        <!--（订单/订单商品表）共用属性-->
+        <result property="orderUUID" column="order_uuid"></result>
+        <result property="isDeleted" column="is_deleted"></result>
+
+        <!--订单表-->
+        <result property="userId" column="user_id"></result>
+        <result property="userName" column="username"></result>
+        <result property="expressWay" column="express_way"></result>
+        <result property="expressFee" column="express_fee"></result>
+        <result property="addressId" column="address_id"></result>
+        <result property="addressName" column="address_name"></result>
+        <result property="address" column="address"></result>
+        <result property="phone" column="address_phone"></result>
+        <result property="code" column="address_code"></result>
+        <result property="sex" column="address_sex"></result>
+        <result property="company" column="address_company"></result>
+        <result property="email" column="address_email"></result>
+        <result property="productTotal" column="total"></result>
+        <result property="uuidCreate" column="uuid_create"></result>
+
+        <!--订单/商品表-->
+        <result property="orderProductId" column="product_id"></result>
+        <result property="orderProductName" column="order_product_name"></result>
+        <result property="productCount" column="quantity"></result>
+        <result property="productSubtotal" column="subtotal"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+
+    </resultMap>
+
+    <insert id="addCheckout" parameterType="com.shop.cn.common.pojo.Order">
+        INSERT INTO order_product
+        (order_uuid,product_id,order_product_name,quantity,subtotal,gmt_create)
+        VALUES
+        (
+        #{orderUUID},#{orderProductId},#{orderProductName},#{productCount},#{productSubtotal},now()
+        )
+    </insert>
+
+    <insert id="addCheckoutUUID" parameterType="com.shop.cn.common.pojo.Order">
+        INSERT INTO `order`
+        (order_uuid,express_fee,express_way,payment_way,total
+        ,address,address_phone,address_code,address_name,address_company,address_sex,address_email
+        ,user_id,username,uuid_create)
+        VALUES
+        (
+        #{orderUUID}
+        ,#{expressFee},#{expressWay},#{paymentWay},#{productTotal}
+        ,#{address},#{phone},#{code},#{addressName},#{company},#{sex},#{email}
+        ,#{userId},#{userName},now()
+        )
+    </insert>
+
+    <select id="findAllFromOrder" parameterType="java.lang.Long" resultMap="orderMapper">
+       SELECT * FROM `ORDER` WHERE user_id=#{_parameter} and is_deleted=0
+    </select>
+
+    <select id="findCheckoutWithUUIDForLike" parameterType="java.lang.String" resultMap="orderMapper">
+        SELECT * FROM `ORDER` WHERE
+        1=1
+        AND
+        <if test="_parameter !=null and _parameter !=''">
+        order_uuid like '%${_parameter}%'
+        </if>
+        AND is_deleted=0
+    </select>
+
+    <select id="findAllFromOrderProductWithUUID" parameterType="java.lang.String" resultMap="orderMapper">
+          SELECT * FROM order_product WHERE order_uuid=#{_parameter} and is_deleted=0
+    </select>
+
+    <select id="findCheckoutWithUUID" parameterType="java.lang.String" resultMap="orderMapper">
+        SELECT * FROM `ORDER` WHERE order_uuid=#{_parameter} and is_deleted=0
+    </select>
+
+
+    <insert id="logicDeleteCheckoutWithUUID" parameterType="java.lang.String">
+        UPDATE `ORDER` set is_deleted=1 WHERE order_uuid=#{_parameter}
+    </insert>
+
+    <insert id="logicDeleteFromOrderProductWithUUID" parameterType="java.lang.String">
+       UPDATE order_product set is_deleted=1 WHERE order_uuid=#{_parameter}
+    </insert>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.cn.common.dao.LoginDao">
+      <resultMap id="LoginMapper" type="com.shop.cn.common.pojo.User">
+        <result property="userId" column="user_id"></result>
+        <result property="userName" column="user_name"></result>
+        <result property="nickName" column="nick_name"></result>
+        <result property="password" column="password"></result>
+        <result property="photo" column="photo"></result>
+        <result property="mail" column="mail"></result>
+        <result property="phone" column="phone"></result>
+    </resultMap>
+
+    <insert id="save" parameterType="com.shop.cn.common.pojo.User">
+      INSERT INTO USER(user_name,password,nick_name,mail) VALUES (#{userName},#{password},#{nickName},#{mail})
+    </insert>
+
+    <select id="findById" resultType="com.shop.cn.common.pojo.User">
+
+    </select>
+
+    <select id="findByName" parameterType="java.lang.String" resultMap="LoginMapper">
+        SELECT user_id,user_name,password FROM USER WHERE user_name=#{_parameter}
+    </select>
+    
+
+    <select id="findUserIdFromSubscription" parameterType="java.lang.Long" resultType="com.shop.cn.common.pojo.Subscription">
+        SELECT * FROM subscriber s WHERE s.userId=#{_parameter}
+    </select>
+
+    <insert id="saveSubscription" parameterType="com.shop.cn.common.pojo.Subscription">
+      INSERT INTO subscriber (userId,email) VALUES (#{userId},#{email})
+    </insert>
+</mapper>
